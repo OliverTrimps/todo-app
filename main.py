@@ -52,8 +52,8 @@ class Todo(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 
-# with app.app_context():
-#     db.create_all()
+with app.app_context():
+    db.create_all()
 
 
 @app.route('/', methods=['GET', 'POST'])
