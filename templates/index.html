@@ -1,0 +1,125 @@
+<!DOCTYPE HTML>
+<!--
+	Dimension by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html xmlns="http://www.w3.org/1999/html">
+	<head>
+		{% import 'bootstrap/wtf.html' as wtf %}
+		<title>Todo App</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="/static/assets/css/main.css" />
+<!--		<script src="/static/assets/css/fontawesome-all.min.css"></script>-->
+		<script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
+		<noscript><link rel="stylesheet" href="/static/assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload" style="background-image: url(/static/assets/images/bg.jpg)">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<div class="logo">
+							<span class="icon fas fa-book"></span>
+						</div>
+						<div class="content">
+							<div class="inner" style="line-height: 1.5px">
+								<h1>ToDo</h1>
+								{% with messages = get_flashed_messages() %}
+								  {% if messages %}
+									{% for message in messages %}
+									  <h3> {{ message }} <span>{{name}}</span></h3>
+									{% endfor %}
+								  {% endif %}
+								{% endwith %}
+
+								{% if show_form %}
+								{{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'primary'}) }}
+								{% else: %}
+								<span><a href="{{url_for('home')}}">Leave <i class="icon fas fa-right-from-bracket"></i></a></span>
+								{% endif %}
+							</div>
+						</div>
+						<nav>
+							<ul>
+								<li><a href="#view">View Todo List</a></li>
+								<li>{% if edit: %}<a href="#todo"> Edit Selected Todo</a>{% else: %}<a href="#todo"> Create New Todo</a>{% endif %}</li>
+<!--								<li><a href="#about">Edit Todo</a></li>-->
+<!--								<li><a href="#contact">Contact</a></li>-->
+								<!--<li><a href="#elements">Elements</a></li>-->
+							</ul>
+						</nav>
+					</header>
+
+				<!-- Main -->
+					<div id="main">
+
+						<!-- Intro -->
+							<article id="view">
+								<h2 class="major">Your Todo List</h2>
+<!--								<span class="image main"><img src="/static/assets/images/pic01.jpg" alt="" /></span>-->
+								{% if not create_form: %}
+								<p>Enter Username to view todos</p>
+								{% else: %}
+								{% for td in user_todo: %}
+									{% if td.completion == True %}
+										<p>{{ td.todo }} <br> {{ td.deadline }} | {{ done }} | <a href="{{url_for('edit_todo', todo_id=td.id)}}#todo">edit/delete</a></p>
+									{% else: %}
+										<p>{{ td.todo }} <br> {{ td.deadline }} | {{ pending }} | <a href="{{url_for('edit_todo', todo_id=td.id)}}#todo">edit/delete</a></p>
+									{% endif %}
+<!--								<p>{{ td.todo }} <br> {{ td.deadline }} | {{ done }}</p>-->
+								{% endfor %}
+								{% endif %}
+							</article>
+
+						<!-- Work -->
+							<article id="todo">
+								<h2 class="major">Create New Todo</h2>
+<!--								<span class="image main"><img src="/static/assets/images/pic02.jpg" alt="" /></span>-->
+<!--								<span class="image main">{{name}}</span>-->
+								{% if create_form: %}
+								<p>
+								{{ wtf.quick_form(create_form, novalidate=True, button_map={'submit': 'primary'}) }}
+								</p>
+								{% if show_delete: %}
+								<span>
+									<i>OR</i>
+									{{ wtf.quick_form(delete, novalidate=True, button_map={'submit': 'danger'}) }}
+								</span>
+								{% endif %}
+								{% else: %}
+								<p>Sign in as guest or enter your username to create a todo</p>
+								{% endif %}
+							</article>
+
+						<!-- About -->
+							<article id="about">
+								<h2 class="major">About</h2>
+								<span class="image main"><img src="/static/assets/images/pic03.jpg" alt="" /></span>
+								<p>Lorem ipsum dolor sit amet, consectetur et adipiscing elit. Praesent eleifend dignissim arcu, at eleifend sapien imperdiet ac. Aliquam erat volutpat. Praesent urna nisi, fringila lorem et vehicula lacinia quam. Integer sollicitudin mauris nec lorem luctus ultrices. Aliquam libero et malesuada fames ac ante ipsum primis in faucibus. Cras viverra ligula sit amet ex mollis mattis lorem ipsum dolor sit amet.</p>
+							</article>
+
+					</div>
+
+				<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; LoneWolf {{ day }}</p>
+					</footer>
+
+			</div>
+
+		<!-- BG -->
+			<div id="bg"></div>
+
+		<!-- Scripts -->
+			<script src="/static/assets/js/jquery.min.js"></script>
+			<script src="/static/assets/js/browser.min.js"></script>
+			<script src="/static/assets/js/breakpoints.min.js"></script>
+			<script src="/static/assets/js/util.js"></script>
+			<script src="/static/assets/js/main.js"></script>
+
+	</body>
+</html>
