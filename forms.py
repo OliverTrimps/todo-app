@@ -13,7 +13,7 @@ class UserForm(FlaskForm):
 
 class CreateTodoForm(FlaskForm):
     todo = TextAreaField(label='What to do?', validators=[DataRequired()])
-    due_date = DateField(label="Due Date", validators=[InputRequired(), DataRequired()])
+    due_date = DateField(label="Due Date", validators=[InputRequired(), DataRequired()], format='%Y-%m-%d')
     # completed = BooleanField(label='Completed?', default=False, render_kw={'checked': ''})
     completed = SelectField(label='Todo Status', choices=['Done', 'Pending'], default='Pending')
     submit = SubmitField(label='Finish')
