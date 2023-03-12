@@ -103,7 +103,7 @@ def create_todo(user_id):
     due_date = form.due_date.data
     completed = form.completed.data
 
-    user = User.query.get(user_id)
+    user = User.query.filter_by(id=user_id).first()
     user_todo = Todo.query.filter_by(user_id=user.id).all()
 
     if form.validate_on_submit():
@@ -115,6 +115,7 @@ def create_todo(user_id):
             new_todo = Todo(todo=todo, deadline=due_date, completion=completed, user_id=user_id)
             db.session.add(new_todo)
             db.session.commit()
+        # user_session = User.query.get(user_id)
         return redirect(url_for('create_todo', user_id=user.id))
 
     return render_template('index.html', show_form=False, form=login_form, name=user.username, create_form=form,
