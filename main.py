@@ -83,8 +83,9 @@ def home():
                 with app.app_context():
                     new_user = User(username=username, date_reg=today)
                     db.session.add(new_user)
+                    first_login = db.session.query(User).filter_by(username=username).first()
                     db.session.commit()
-                first_login = User.query.filter_by(username=username).first()
+
                 flash(f'Welcome!')
                 return redirect(url_for('create_todo', user_id=first_login.id))
         return redirect(url_for('create_todo', user_id=user.id))
@@ -103,7 +104,7 @@ def create_todo(user_id):
     due_date = form.due_date.data
     completed = form.completed.data
 
-    user = User.query.filter_by(id=user_id).first()
+    user = User.query.get(user_id)
     user_todo = Todo.query.filter_by(user_id=user.id).all()
 
     if form.validate_on_submit():
@@ -114,9 +115,10 @@ def create_todo(user_id):
         with app.app_context():
             new_todo = Todo(todo=todo, deadline=due_date, completion=completed, user_id=user_id)
             db.session.add(new_todo)
+            user_session = db.session.query(User).filter_by(id=user_id).first()
             db.session.commit()
         # user_session = User.query.get(user_id)
-        return redirect(url_for('create_todo', user_id=user.id))
+        return redirect(url_for('create_todo', user_id=user_session.id))
 
     return render_template('index.html', show_form=False, form=login_form, name=user.username, create_form=form,
                            user_todo=user_todo, done='Done ✅', pending='Pending ⏸', edit=False, show_delete=False,
@@ -149,8 +151,9 @@ def edit_todo(todo_id):
     if delete_form.validate_on_submit():
         todo_to_delete = Todo.query.get(todo_id)
         db.session.delete(todo_to_delete)
+        user_session = db.session.query(User).filter_by(id=user.id).first()
         db.session.commit()
-        return redirect(url_for('create_todo', user_id=user.id))
+        return redirect(url_for('create_todo', user_id=user_session))
     return render_template('index.html', show_form=False, form=login_form, name=user.username, create_form=form,
                            user_todo=user_todo, done='Done ✅', pending='Pending ⏸', edit=True, show_delete=True,
                            delete=delete_form, day=day.year)
