@@ -6,7 +6,7 @@ from datetime import date
 # Successfully installed WTForms-3.0.1 flask-wtf-1.1.1
 
 day = date.today()
-today = day.strftime("%m/%d/%Y")
+today = day.strftime("%Y-%m/%d")
 
 
 class UserForm(FlaskForm):
@@ -17,7 +17,7 @@ class UserForm(FlaskForm):
 
 class CreateTodoForm(FlaskForm):
     todo = TextAreaField(label='What to do?', validators=[DataRequired()])
-    due_date = DateField(label="Due Date", validators=[InputRequired(), DataRequired()], format='%m-%d-%Y', default=today)
+    due_date = DateField(label="Due Date", validators=[InputRequired(), DataRequired()], default=today)
     # completed = BooleanField(label='Completed?', default=False, render_kw={'checked': ''})
     completed = SelectField(label='Todo Status', choices=['Done', 'Pending'], default='Pending')
     submit = SubmitField(label='Finish')
