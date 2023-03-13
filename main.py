@@ -83,10 +83,12 @@ def home():
                 with app.app_context():
                     new_user = User(username=username, date_reg=today)
                     db.session.add(new_user)
-                    first_login = db.session.query(User).filter_by(username=username).first()
+                    # first_login = db.session.query(User).filter_by(username=username).first()
                     db.session.commit()
 
                 flash(f'Welcome!')
+                with app.app_context():
+                    first_login = db.session.query(User).filter_by(username=username).first()
                 return redirect(url_for('create_todo', user_id=first_login.id))
         return redirect(url_for('create_todo', user_id=user.id))
     #     return render_template('index.html', show_form=False, name=username, create_form=create_form)
@@ -105,7 +107,7 @@ def create_todo(user_id):
     completed = form.completed.data
 
     user = User.query.get(user_id)
-    user_todo = Todo.query.filter_by(user_id=user.id).all()
+    # user_todo = Todo.query.filter_by(user_id=user_id).all()
 
     if form.validate_on_submit():
         if completed == 'Done':
@@ -115,10 +117,14 @@ def create_todo(user_id):
         with app.app_context():
             new_todo = Todo(todo=todo, deadline=due_date, completion=completed, user_id=user_id)
             db.session.add(new_todo)
-            user_session = db.session.query(User).filter_by(id=user_id).first()
+            # user_session = db.session.query(User).filter_by(id=user_id).first()
             db.session.commit()
         # user_session = User.query.get(user_id)
+        with app.app_context():
+            user_session = db.session.query(User).filter_by(id=user_id).first()
         return redirect(url_for('create_todo', user_id=user_session.id))
+
+    user_todo = Todo.query.filter_by(user_id=user_id).all()
 
     return render_template('index.html', show_form=False, form=login_form, name=user.username, create_form=form,
                            user_todo=user_todo, done='Done ✅', pending='Pending ⏸', edit=False, show_delete=False,
@@ -129,8 +135,8 @@ def create_todo(user_id):
 @app.route("/edit_todo/<int:todo_id>", methods=['GET', 'POST'])
 def edit_todo(todo_id):
     todo = Todo.query.get(todo_id)
-    todo_date = datetime.datetime.strptime(todo.deadline, '%Y-%m-%d')
-    # todo_deadline = todo_date.strftime()
+    todo_date = todo.deadline
+    # todo_deadline = todo_date.strftime()   datetime.datetime.strptime(todo.deadline, '%Y-%m-%d')
 
     form = CreateTodoForm(todo=todo.todo, due_date=todo_date, completed=todo.completion)
     login_form = UserForm()
@@ -151,13 +157,13 @@ def edit_todo(todo_id):
     if delete_form.validate_on_submit():
         todo_to_delete = Todo.query.get(todo_id)
         db.session.delete(todo_to_delete)
-        user_session = db.session.query(User).filter_by(id=user.id).first()
+        # user_session = db.session.query(User).filter_by(id=user.id).first()
         db.session.commit()
-        return redirect(url_for('create_todo', user_id=user_session))
+        return redirect(url_for('create_todo', user_id=todo.user_id))
     return render_template('index.html', show_form=False, form=login_form, name=user.username, create_form=form,
                            user_todo=user_todo, done='Done ✅', pending='Pending ⏸', edit=True, show_delete=True,
                            delete=delete_form, day=day.year)
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
